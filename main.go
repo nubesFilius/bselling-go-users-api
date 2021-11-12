@@ -1,8 +1,6 @@
 package main
 
-import ("fmt"
-"github.com/nubesFilius/BookSelling-GoAPI/users-api/app"
-)
+import "github.com/nubesFilius/bselling-go-users-api/app"
 
 func main() {
 	app.StartApplication()

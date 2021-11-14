@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/nubesFilius/bselling-go-users-api/domain/users"
-	"github.com/nubesFilius/bselling-go-users-api/utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
 )
 
 func GetUser(userId int64) (*users.User, *errors.RestErr) {

@@ -4,7 +4,7 @@
 package users
 
 import (
-	"github.com/nubesFilius/bselling-go-users-api/utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
 	"strings"
 )
 

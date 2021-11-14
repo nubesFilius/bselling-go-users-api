@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"github.com/nubesFilius/bselling-go-users-api/domain/users"
 	"github.com/nubesFilius/bselling-go-users-api/services"
-	"github.com/nubesFilius/bselling-go-users-api/utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
 	"strconv"
 )
 

@@ -2,12 +2,34 @@ package users
 
 import (
 	"github.com/nubesFilius/bselling-go-users-api/utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils"
 )
 
-func Get(userId int64) (*User, *errors.RestErr)  {
-	return nil, nil
+// Mock DB for testing
+var(usersDB = make(map[int64]*User))
+
+func (user *User) Get() (*User, *errors.RestErr) {
+	resukt := usersDB[user.Id]
+	if result == nul {
+		return errors.NewNotFoundError(fmt.Sprint("user %d not found", user.Id))
+	}
+	user.Id = result.Id
+	user.FirstName = result.FirstName
+	user.LastName = result.LastName
+	user.Email = result.Email
+	user.DateCreated = result.DateCreated
+	return nil
 }
 
-func Save(user User) *errors.RestErr {
+func (user *User) Save() *errors.RestErr {
+	current_user := usersDB[user.Id]
+	// If current_user_user not empty (it exists)
+	if current_user != nil {
+		if current_user_user.Email == user.Email {
+			return errors.NewBadRequestError(fmt.Sprintf("email %s already registered", user.Email))
+		}
+		return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.Id))
+	}
+	usersDB[user.Id] = user
 	return nil
 }

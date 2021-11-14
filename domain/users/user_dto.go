@@ -1,7 +1,8 @@
 package users
 
 import (
-	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
+	"github.com/nubesFilius/bselling-go-users-api/utils"
+	"strings"
 )
 
 type User struct {

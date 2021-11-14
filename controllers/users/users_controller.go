@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"github.com/nubesFilius/bselling-go-users-api/domain/users"
 	"github.com/nubesFilius/bselling-go-users-api/services"
-	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
+	"github.com/nubesFilius/bselling-go-users-api/utils"
 )
 
 func CreateUser(c *gin.Context) {

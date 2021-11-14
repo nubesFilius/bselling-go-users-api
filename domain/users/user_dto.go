@@ -1,3 +1,6 @@
+// Here we define the objects that will be
+// transfered between app and DB.
+
 package users
 
 import (

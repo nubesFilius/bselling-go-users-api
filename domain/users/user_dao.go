@@ -1,3 +1,5 @@
+// Here we'll define how the objects in App interact with DB
+
 package users
 
 import (

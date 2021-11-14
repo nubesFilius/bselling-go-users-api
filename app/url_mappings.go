@@ -1,7 +1,8 @@
 package app
 
-import ("github.com/nubesFilius/bselling-go-users-api/controllers/users"
-"github.com/nubesFilius/bselling-go-users-api/controllers/ping"
+import (
+	"github.com/nubesFilius/bselling-go-users-api/controllers/users"
+	"github.com/nubesFilius/bselling-go-users-api/controllers/ping"
 )
 
 func mapUrls() {

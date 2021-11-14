@@ -33,7 +33,9 @@ func (user *User) Save() *errors.RestErr {
 		}
 		return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.Id))
 	}
+	fmt.Println(user)
 	user.DateCreated = date_utils.GetNowString()
+	fmt.Println(user)
 	usersDB[user.Id] = user
 	return nil
 }

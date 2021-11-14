@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	apiDateLayout = "2021-11-14T11:00:00Z"
+	apiDateLayout = "Jan 2 15:04:05 2006 MST"
 )
 
 func GetNow() time.Time {
@@ -13,6 +13,5 @@ func GetNow() time.Time {
 }
 
 func GetNowString() string {
-	
 	return GetNow().Format(apiDateLayout)
 }

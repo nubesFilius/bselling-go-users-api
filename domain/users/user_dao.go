@@ -3,7 +3,8 @@
 package users
 
 import (
-	"github.com/nubesFilius/bselling-go-users-api/utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
 	"fmt"
 )
 
@@ -24,14 +25,15 @@ func (user *User) Get() *errors.RestErr {
 }
 
 func (user *User) Save() *errors.RestErr {
-	current_user := usersDB[user.Id]
-	// If current_user_user not empty (it exists)
-	if current_user != nil {
-		if current_user.Email == user.Email {
+	existing_user := usersDB[user.Id]
+	// If existing_user_user not empty (it exists)
+	if existing_user != nil {
+		if existing_user.Email == user.Email {
 			return errors.NewBadRequestError(fmt.Sprintf("email %s already registered", user.Email))
 		}
 		return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.Id))
 	}
+	user.DateCreated = date_utils.GetNowString()
 	usersDB[user.Id] = user
 	return nil
 }

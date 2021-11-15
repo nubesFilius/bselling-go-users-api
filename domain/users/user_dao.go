@@ -5,6 +5,7 @@ package users
 import (
 	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
 	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
+	"github.com/nubesFilius/bselling-go-users-api/datasources/mysql/users_db"
 	"fmt"
 )
 
@@ -12,6 +13,10 @@ import (
 var(usersDB = make(map[int64]*User))
 
 func (user *User) Get() *errors.RestErr {
+	if err := users_db.Client.Ping(); err != nil {
+		panic(err)
+	}
+
 	result := usersDB[user.Id]
 	if result == nil {
 		return errors.NewNotFoundError(fmt.Sprint("user %d not found", user.Id))

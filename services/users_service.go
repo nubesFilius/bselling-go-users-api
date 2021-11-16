@@ -18,9 +18,6 @@ func GetUser(userId int64) (*users.User, *errors.RestErr) {
 }
 
 func CreateUser(user users.User) (*users.User, *errors.RestErr) {
-	if err := user.Validate(); err != nil {
-		return nil, err
-	}
 	if err := user.Save(); err != nil {
 		return nil, err
 	}
@@ -30,10 +27,6 @@ func CreateUser(user users.User) (*users.User, *errors.RestErr) {
 func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr) {
 	current, err := GetUser(user.Id)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := user.Validate(); err != nil {
 		return nil, err
 	}
 

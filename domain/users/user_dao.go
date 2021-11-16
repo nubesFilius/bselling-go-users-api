@@ -14,6 +14,7 @@ const(
 	errorNoRows = "no rows in result set"
 	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
 	queryGetUser = "SELECT id, first_name, last_name, email, date_created FROM users WHERE id=?;"
+	queryUpdateUser = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
 )
 
 // GetUser
@@ -59,16 +60,19 @@ func (user *User) Save() *errors.RestErr {
 	}
 	user.Id = userId
 	return nil
+}
 
-	// #### LEGACY ####
-	// existing_user := usersDB[user.Id]
-	// if existing_user != nil {
-	// 	if existing_user.Email == user.Email {
-	// 		return errors.NewBadRequestError(fmt.Sprintf("email %s already registered", user.Email))
-	// 	}
-	// 	return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.Id))
-	// }
-	// user.DateCreated = date_utils.GetNowString()
-	// usersDB[user.Id] = user
-	// return nil
+
+func (user *User) Update() *errors.RestErr {
+	stmt, err := users_db.Client.Prepare(queryUpdateUser)
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.FirstName, user.LastName, user.Email, user.Id) 
+	if err != nil {
+		return mysql_utils.ParseError(err)
+	}
+	return nil
 }

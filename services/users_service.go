@@ -3,13 +3,11 @@ package services
 import (
 	"github.com/nubesFilius/bselling-go-users-api/domain/users"
 	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
+	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils/crypto_utils"
 )
 
 func GetUser(userId int64) (*users.User, *errors.RestErr) {
-	// If we wanted to validate the in64
-	// if userId <= 0 {
-	// 	return nil, errors.NewBadRequestError("invalid user id")
-	// }
 	user := &users.User{Id: userId}
 	if err := user.Get(); err != nil {
 		return nil, err
@@ -18,6 +16,13 @@ func GetUser(userId int64) (*users.User, *errors.RestErr) {
 }
 
 func CreateUser(user users.User) (*users.User, *errors.RestErr) {
+	if err := user.Validate(); err != nil {
+		return nil, err
+	}
+
+	user.Status = users.StatusActive
+	user.DateCreated = date_utils.GetNowString()
+	user.Password = crypto_utils.GetMd5(user.Password)
 	if err := user.Save(); err != nil {
 		return nil, err
 	}
@@ -50,4 +55,14 @@ func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr) 
 		return nil, err
 	}
 	return current, nil
+}
+
+func DeleteUser(userId int64) *errors.RestErr {
+	user := &users.User{Id: userId}
+	return user.Delete()
+}
+
+func FindByStatus(status string) ([]users.User, *errors.RestErr) {
+	user := &users.User{}
+	return user.FindByStatus(status)
 }

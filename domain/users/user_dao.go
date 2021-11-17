@@ -4,17 +4,20 @@ package users
 
 import (
 	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
-	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
 	"github.com/nubesFilius/bselling-go-users-api/utils/mysql_utils"
+	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
 	"github.com/nubesFilius/bselling-go-users-api/datasources/mysql/users_db"
+	"fmt"
 )
 
 const(
 	indexUniqueEmail = "email_UNIQUE"
 	errorNoRows = "no rows in result set"
-	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?);"
-	queryGetUser = "SELECT id, first_name, last_name, email, date_created FROM users WHERE id=?;"
+	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created, password, status) VALUES(?, ?, ?, ?, ?, ?);"
+	queryGetUser = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE id=?;"
 	queryUpdateUser = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
+	queryDeleteUser = "DELETE FROM users WHERE id=?;"
+	queryFindUserByStatus = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE status=?;"
 )
 
 // GetUser
@@ -27,7 +30,7 @@ func (user *User) Get() *errors.RestErr {
 
 	result := stmt.QueryRow(user.Id)
 
-	if getErr := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated); getErr != nil {
+	if getErr := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status); getErr != nil {
 		return mysql_utils.ParseError(getErr)
 	}
 
@@ -40,19 +43,14 @@ func (user *User) Save() *errors.RestErr {
 	if err != nil {
 		return errors.NewInternalServerError(err.Error())
 	}
-	// Have to close the connection when done. Specified in doc of `Prepare()`
 	defer stmt.Close()
-
+	
 	user.DateCreated = date_utils.GetNowString()
-
-	insertResult, saveErr := stmt.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated)
+	
+	insertResult, saveErr := stmt.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated, user.Password, user.Status)
 	if saveErr != nil {
 		return mysql_utils.ParseError(saveErr)
 	}
-
-	// Also possible to do as below. However, it won't provide statement validation prior to executing and it's also less performant.
-	// It provides just the result of the executed query.
-	// `result, err := users_db.Client.Exec(queryInsertUser, user.FirstName, user.LastName, user.Email, user.DateCreated)`
 
 	userId, err := insertResult.LastInsertId()
 	if err != nil {
@@ -62,7 +60,7 @@ func (user *User) Save() *errors.RestErr {
 	return nil
 }
 
-
+// UpdateUsers
 func (user *User) Update() *errors.RestErr {
 	stmt, err := users_db.Client.Prepare(queryUpdateUser)
 	if err != nil {
@@ -75,4 +73,46 @@ func (user *User) Update() *errors.RestErr {
 		return mysql_utils.ParseError(err)
 	}
 	return nil
+}
+
+// DeleteUsers
+func (user *User) Delete() *errors.RestErr {
+	stmt, err := users_db.Client.Prepare(queryDeleteUser)
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(user.Id); err != nil {
+		return mysql_utils.ParseError(err)
+	}
+	return nil
+}
+
+// FindUsers
+func (user *User) FindByStatus(status string) ([]User, *errors.RestErr) {
+	stmt, err := users_db.Client.Prepare(queryFindUserByStatus)
+	if err != nil {
+		return nil, errors.NewInternalServerError(err.Error())
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(status)
+	if err != nil {
+		return nil, errors.NewInternalServerError(err.Error())
+	}
+	defer rows.Close()
+
+	results := make([]User, 0)
+	for rows.Next() {
+		var user User
+		if err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status); err != nil {
+			return nil, mysql_utils.ParseError(err)
+		}
+		results = append(results, user)
+	}
+	if len(results) == 0 {
+		return nil, errors.NewNotFoundError(fmt.Sprintf("no users matching status %s", status))
+	}
+	return results, nil
 }

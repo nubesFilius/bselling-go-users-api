@@ -7,6 +7,7 @@ import (
 	"github.com/nubesFilius/bselling-go-users-api/utils/crypto_utils"
 )
 
+// GetUser
 func GetUser(userId int64) (*users.User, *errors.RestErr) {
 	user := &users.User{Id: userId}
 	if err := user.Get(); err != nil {
@@ -15,6 +16,7 @@ func GetUser(userId int64) (*users.User, *errors.RestErr) {
 	return user, nil
 }
 
+// CreateUser
 func CreateUser(user users.User) (*users.User, *errors.RestErr) {
 	if err := user.Validate(); err != nil {
 		return nil, err
@@ -29,6 +31,7 @@ func CreateUser(user users.User) (*users.User, *errors.RestErr) {
 	return &user, nil
 }
 
+// UpdateUser
 func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr) {
 	current, err := GetUser(user.Id)
 	if err != nil {
@@ -57,12 +60,14 @@ func UpdateUser(isPartial bool, user users.User) (*users.User, *errors.RestErr) 
 	return current, nil
 }
 
+// DeleteUser
 func DeleteUser(userId int64) *errors.RestErr {
 	user := &users.User{Id: userId}
 	return user.Delete()
 }
 
-func FindByStatus(status string) ([]users.User, *errors.RestErr) {
+// FindUser
+func FindByStatus(status string) (users.Users, *errors.RestErr) {
 	user := &users.User{}
 	return user.FindByStatus(status)
 }

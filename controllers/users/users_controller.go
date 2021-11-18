@@ -2,12 +2,16 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"github.com/nubesFilius/bselling-go-users-api/domain/users"
 	"github.com/nubesFilius/bselling-go-users-api/services"
 	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
+	"net/http"
 	"strconv"
 )
+
+func TestServiceInterface() {
+
+}
 
 // CreateUser
 func CreateUser(c *gin.Context) {
@@ -17,7 +21,7 @@ func CreateUser(c *gin.Context) {
 		c.JSON(restErr.Status, restErr)
 		return
 	}
-	result, saveErr := services.CreateUser(user)
+	result, saveErr := services.UsersService.CreateUser(user)
 	if saveErr != nil {
 		c.JSON(saveErr.Status, saveErr)
 		return
@@ -33,7 +37,7 @@ func GetUser(c *gin.Context) {
 		c.JSON(err.Status, err)
 		return
 	}
-	user, getErr := services.GetUser(userId)
+	user, getErr := services.UsersService.GetUser(userId)
 	if getErr != nil {
 		c.JSON(getErr.Status, getErr)
 		return
@@ -60,7 +64,7 @@ func UpdateUser(c *gin.Context) {
 
 	isPartial := c.Request.Method == http.MethodPatch
 
-	result, err := services.UpdateUser(isPartial, user)
+	result, err := services.UsersService.UpdateUser(isPartial, user)
 	if err != nil {
 		c.JSON(err.Status, err)
 		return
@@ -75,7 +79,7 @@ func DeleteUser(c *gin.Context) {
 		err := errors.NewBadRequestError("user id should be a number")
 		c.JSON(err.Status, err)
 	}
-	if err := services.DeleteUser(userId); err != nil {
+	if err := services.UsersService.DeleteUser(userId); err != nil {
 		c.JSON(err.Status, err)
 		return
 	}
@@ -84,8 +88,8 @@ func DeleteUser(c *gin.Context) {
 
 func Search(c *gin.Context) {
 	status := c.Query("status")
-	
-	users, err := services.FindByStatus(status)
+
+	users, err := services.UsersService.FindByStatus(status)
 	if err != nil {
 		c.JSON(err.Status, err)
 		return

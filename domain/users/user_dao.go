@@ -3,20 +3,20 @@
 package users
 
 import (
+	"fmt"
+	"github.com/nubesFilius/bselling-go-users-api/datasources/mysql/users_db"
+	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
 	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
 	"github.com/nubesFilius/bselling-go-users-api/utils/mysql_utils"
-	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
-	"github.com/nubesFilius/bselling-go-users-api/datasources/mysql/users_db"
-	"fmt"
 )
 
-const(
-	indexUniqueEmail = "email_UNIQUE"
-	errorNoRows = "no rows in result set"
-	queryInsertUser = "INSERT INTO users(first_name, last_name, email, date_created, password, status) VALUES(?, ?, ?, ?, ?, ?);"
-	queryGetUser = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE id=?;"
-	queryUpdateUser = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
-	queryDeleteUser = "DELETE FROM users WHERE id=?;"
+const (
+	indexUniqueEmail      = "email_UNIQUE"
+	errorNoRows           = "no rows in result set"
+	queryInsertUser       = "INSERT INTO users(first_name, last_name, email, date_created, password, status) VALUES(?, ?, ?, ?, ?, ?);"
+	queryGetUser          = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE id=?;"
+	queryUpdateUser       = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
+	queryDeleteUser       = "DELETE FROM users WHERE id=?;"
 	queryFindUserByStatus = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE status=?;"
 )
 
@@ -44,9 +44,9 @@ func (user *User) Save() *errors.RestErr {
 		return errors.NewInternalServerError(err.Error())
 	}
 	defer stmt.Close()
-	
+
 	user.DateCreated = date_utils.GetNowString()
-	
+
 	insertResult, saveErr := stmt.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated, user.Password, user.Status)
 	if saveErr != nil {
 		return mysql_utils.ParseError(saveErr)
@@ -68,7 +68,7 @@ func (user *User) Update() *errors.RestErr {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.FirstName, user.LastName, user.Email, user.Id) 
+	_, err = stmt.Exec(user.FirstName, user.LastName, user.Email, user.Id)
 	if err != nil {
 		return mysql_utils.ParseError(err)
 	}

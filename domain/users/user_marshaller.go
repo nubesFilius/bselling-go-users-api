@@ -8,19 +8,19 @@ import (
 
 // What will be showed to a public request
 type PublicUser struct {
-	Id int64 `json:"id"`
+	Id          int64  `json:"id"`
 	DateCreated string `json:"date_created"`
-	Status string `json:"status"`
+	Status      string `json:"status"`
 }
 
 // What will be showed to an internal/private request
 type PrivateUser struct {
-	Id int64 `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName string `json:"last_name"`
-	Email string `json:"email"`
+	Id          int64  `json:"id"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
 	DateCreated string `json:"date_created"`
-	Status string `json:"status"`
+	Status      string `json:"status"`
 }
 
 func (users Users) Marshall(isPublic bool) []interface{} {
@@ -34,9 +34,9 @@ func (users Users) Marshall(isPublic bool) []interface{} {
 func (user *User) Marshall(isPublic bool) interface{} {
 	if isPublic {
 		return PublicUser{
-			Id: user.Id,
+			Id:          user.Id,
 			DateCreated: user.DateCreated,
-			Status: user.Status,
+			Status:      user.Status,
 		}
 	}
 	userJson, _ := json.Marshal(user)

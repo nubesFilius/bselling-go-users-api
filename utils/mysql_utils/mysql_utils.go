@@ -1,10 +1,10 @@
 package mysql_utils
 
 import (
-	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
-	"github.com/go-sql-driver/mysql"
-	"strings"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
+	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
+	"strings"
 )
 
 const (

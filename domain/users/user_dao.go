@@ -5,9 +5,11 @@ package users
 import (
 	"fmt"
 	"github.com/nubesFilius/bselling-go-users-api/datasources/mysql/users_db"
+	"github.com/nubesFilius/bselling-go-users-api/logger"
 	"github.com/nubesFilius/bselling-go-users-api/utils/date_utils"
 	"github.com/nubesFilius/bselling-go-users-api/utils/errors"
-	"github.com/nubesFilius/bselling-go-users-api/logger"
+	"github.com/nubesFilius/bselling-go-users-api/utils/mysql_utils"
+	"strings"
 )
 
 const (
@@ -18,6 +20,7 @@ const (
 	queryUpdateUser       = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?;"
 	queryDeleteUser       = "DELETE FROM users WHERE id=?;"
 	queryFindUserByStatus = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE status=?;"
+	queryFindUserByEmailAndPassword = "SELECT id, first_name, last_name, email, date_created, status FROM users WHERE email=? AND password=?;"
 )
 
 // GetUser
@@ -127,4 +130,24 @@ func (user *User) FindByStatus(status string) ([]User, *errors.RestErr) {
 		return nil, errors.NewNotFoundError(fmt.Sprintf("no users matching status %s", status))
 	}
 	return results, nil
+}
+
+func (user *User) FindUserByEmailAndPassword() *errors.RestErr {
+	stmt, err := users_db.Client.Prepare(queryFindUserByEmailAndPassword)
+	if err != nil {
+		logger.Error("error when trying to prepare users by email and password statement", err)
+		return errors.NewInternalServerError("database error")
+	}
+	defer stmt.Close()
+
+	result := stmt.QueryRow(user.Email, user.Password)
+	if err := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status);
+	err != nil {
+		if strings.Contains(err.Error(), mysql_utils.ErrorNoRows) {
+			return errors.NewNotFoundError("invalid user credentials")
+		}
+		logger.Error("error when trying to get user by email and password", err)
+		return errors.NewInternalServerError("database error")
+	}
+	return nil
 }
